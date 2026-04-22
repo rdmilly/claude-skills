@@ -2,24 +2,28 @@
 
 > Reusable runbooks, templates, and procedures for Claude AI sessions.
 
-These are instruction files that Claude reads at the start of specific tasks. They contain exact schemas, templates, credentials, and step-by-step procedures so Claude doesn't have to hunt for info every time.
-
-## How Skills Work
-
-When a task matches a skill, Claude reads the skill file first before doing anything. This eliminates repeated debugging and information gathering.
+These are instruction files that Claude reads at the start of specific tasks. They contain exact schemas, templates, and step-by-step procedures so Claude doesn't have to hunt for info every time.
 
 ## Skills Index
 
-| Skill | File | Use When |
+| Skill | Path | Use When |
 |-------|------|----------|
-| MCP Server Installation | [mcp/install-mcp-server.md](mcp/install-mcp-server.md) | Adding any new MCP server to the ContextForge pipeline |
+| MCP Server Installation | [mcp/install-mcp-server.md](mcp/install-mcp-server.md) | Adding any new MCP server to the pipeline |
+| Frontend Design v3 | [frontend-design-v3/SKILL.md](frontend-design-v3/SKILL.md) | Building any web UI, landing page, dashboard, portfolio, or visual artifact |
+| Skill Improver | [skill-improver/SKILL.md](skill-improver/SKILL.md) | Iteratively improving any existing skill through research-driven cycles |
 
-## Adding New Skills
+## How Skills Work
 
-A good skill includes:
-1. **When to use it** - what triggers this skill
-2. **Prerequisites** - what you need before starting
-3. **Step-by-step procedure** - exact commands, not vague instructions
-4. **Templates** - copy-paste ready files (Dockerfile, compose, etc.)
-5. **Gotchas** - things that broke before and how to avoid them
-6. **Verification** - how to confirm it worked
+When a task matches a skill, Claude reads the skill file first before doing anything. Skills are deployed to `/mnt/skills/user/` in the Claude desktop environment.
+
+## Skill Development
+
+Skills are developed using the **skill-improver** process:
+1. Baseline audit (element matrix with gap scores)
+2. Evaluation rubric (criteria defined before improving)
+3. Targeted research (weakest 3 elements, top 3 improvements each)
+4. Implement with changelog
+5. Test in different contexts, score against rubric
+6. Save and identify next priorities
+
+Each iteration goes deeper, not wider. See [skill-improver/SKILL.md](skill-improver/SKILL.md) for the full process.
