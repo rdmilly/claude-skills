@@ -3,11 +3,11 @@ name: revenue-architecture
 description: A structured methodology for mapping existing technical assets to revenue streams and creating an actionable path to income. Use this skill whenever the user asks about monetization, revenue planning, making money from what they've built, business model design, finding revenue opportunities, or transitioning from building to earning. Also trigger on "how do we make money from this", "what's the business model", "fastest path to income", or "turn this into a product". Works for any builder who has accumulated technical assets without a clear revenue model.
 ---
 
-# Revenue Architecture v2
+# Revenue Architecture v3
 
 A repeatable methodology for converting accumulated technical capability into income. Designed for the builder who has spent months creating infrastructure, tools, and systems but hasn't yet generated revenue from them.
 
-Enhanced via 3-run skill enhancer process: 33 candidates generated, 18 kept, 6 cut, 4 compressed, 3 merged.
+v2 enhanced via 3-run skill enhancer (33 candidates, 18 kept). v3 refined via single-lens pass with updated enhancer v2.1 (4 candidates, 3 kept, 0 cut). Key v3 addition: review-and-adapt cycle that turns the static plan into a living one.
 
 ## When to use this skill
 
@@ -110,6 +110,10 @@ Map the first 90 days in 2-week blocks. Follow the tier order: activate Tier 1 f
 - Weeks 5-8: Deliver to first clients. Start Tier 3 build during non-client hours.
 - Weeks 9-12: Scale delivery. Launch product betas. Measure and adjust.
 
+**Checkpoint at end of each block:** Define a pass/fail check per block. If the target was 5 discovery calls and you got 0, diagnose: outreach not sent (activation problem), sent but no replies (messaging problem), replies but no calls (qualification problem). Each diagnosis has a different fix. If Plan A stalls completely, pivot to warm outreach (referrals, local groups, free audits).
+
+**Track velocity, not just revenue:** In the first 30 days, leading indicators matter more than revenue. "$0 revenue but 3 proposals sent" = on track (pipeline building). "$0 revenue, 0 proposals" = off track (pipeline empty). Revenue is a lagging indicator — don't wait for it to tell you whether the plan is working.
+
 **Failure mode:** Spending weeks 1-4 on Tier 3 product work because it's more fun than sales calls. Tier 1 activation funds everything else.
 
 ### Step 6: Decision points (max 5)
@@ -125,6 +129,20 @@ Identify the questions that only the human can answer. These are the blockers th
 
 **Failure mode:** Asking 10 open-ended questions that the user stares at for a week and never answers. The defaults + commitment framing fixes this.
 
+### Step 7: Review and adapt (bi-weekly)
+
+The plan is a hypothesis. Reality will diverge. This step turns a static plan into a living one.
+
+**Every 2 weeks:**
+- Compare actual results to targets for the block that just ended
+- Replace projected numbers with real numbers in the revenue math (actual clients, actual conversion, actual hours spent)
+- If a revenue stream consistently underperforms projections across 2 consecutive blocks, either diagnose and fix the specific bottleneck or demote/cut the stream entirely
+- Adjust the next 2-week block based on what you learned — shift hours toward what's working, away from what isn't
+
+**Output:** Updated revenue math with real numbers replacing projections, and a revised next-block plan. This output feeds back into Step 5 as input for the next cycle.
+
+**Failure mode:** Skipping the review because you're "too busy delivering." The review IS the mechanism that prevents spending 90 days on a plan that stopped working at day 14.
+
 ## Output format
 
 After running all six steps, produce:
@@ -136,3 +154,4 @@ After running all six steps, produce:
 5. **Revenue math** — profit (not revenue) projections with best/expected/worst, $/hr per stream, and months-to-break-even
 6. **90-day plan** — 2-week blocks with actions, targets, hours, and dependencies
 7. **Decision points** — max 5, with default options, framed as commitments
+8. **Review template** — bi-weekly checkpoint format with actual vs projected comparison
