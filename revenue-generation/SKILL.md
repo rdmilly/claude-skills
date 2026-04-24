@@ -3,7 +3,7 @@ name: revenue-generation
 description: A methodology for an AI system to identify, plan, and execute revenue-generating activities with minimal human intervention. Use this skill when the user asks the AI to make money, generate revenue autonomously, find ways to earn income through automated systems, or design self-sustaining business operations. Trigger on "how can you make money", "what can you do to earn revenue", "autonomous revenue", "make money without me", "self-sustaining system", or "what can you automate that pays". This skill is for the AI system itself, not the human — it evaluates what the AI can execute, where human approval gates are needed, and how to progressively automate those gates.
 ---
 
-# Revenue Generation
+# Revenue Generation v2
 
 A methodology for an AI system to identify and execute revenue-generating activities autonomously. Unlike Revenue Architecture (which maps a human's assets to revenue), this skill asks: what can the AI system DO on its own that produces income, and what's the minimum human involvement needed?
 
@@ -76,9 +76,15 @@ For each primitive, record:
 - **What's the marginal cost?** (What does producing one more unit cost in compute/API calls?)
 - **Is it repeatable?** (Can the AI produce this 100 times with consistent quality?)
 
+**Demand validation (before building anything):** Test demand with zero build effort. Create a landing page describing the product, drive 100 views via a social post or existing channel. If zero signups/interest, don't build it. The AI can create the landing page, write the post, and track analytics autonomously.
+
+**The "while you sleep" test:** Can this primitive generate revenue at 3am on a Tuesday with no human awake? If not, identify what breaks and fix it before calling it autonomous.
+
 ### Step 2: Assemble primitives into revenue products
 
 Combine primitives into packages people will actually buy. The best products combine a creation primitive + a distribution primitive + an operation primitive.
+
+**Competitive scan (autonomous):** Before building any product, search for existing alternatives. If 5 competitors sell the same thing cheaper, either find a clear differentiator or pick a different product. The AI can run this scan via web search without human involvement.
 
 **Product design rules for autonomous revenue:**
 
@@ -119,6 +125,12 @@ Standard revenue math, but with two critical additions:
 - **Automation ratio = AI hours / total hours**
 
 A product with 95% automation ratio and $2,000/month revenue is more valuable than a product with 40% automation ratio and $5,000/month revenue — because the first one scales without the human becoming the bottleneck.
+
+**Track actual vs projected automation ratio:** At each checkpoint, record actual human hours spent vs projected. If actual is 3x projection, the product isn't as autonomous as planned — fix the gates or reclassify the product.
+
+**Unit economics per product:** Calculate CAC (customer acquisition cost — should be near-zero for autonomous products since the AI can't spend on ads without approval), LTV (lifetime value), and payback period. Prefer products with organic/SEO/content-driven acquisition.
+
+**Prefer flywheels:** Products where usage generates data that improves the product, attracting more users. Run 2-3 small products simultaneously so one failure doesn't kill infrastructure funding.
 
 **Compute the self-sustainability threshold:** At what revenue level does the system pay for its own infrastructure?
 - List all infrastructure costs: VPS hosting, API calls, domain registrations, tool subscriptions
