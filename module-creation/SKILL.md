@@ -1,11 +1,19 @@
 ---
 name: module-creation
-description: Create automation modules for any process, workflow, or business function by decomposing it into a value chain and identifying friction at each stage. Use this skill whenever the user wants to brainstorm modules, break down a process into automatable steps, identify bottlenecks in a workflow, design a modular system, or figure out "what should I automate." Triggers on phrases like "create modules for," "what modules do we need," "how do I automate this," "brainstorm ideas for," "modularize this," "break this down," "decompose this process," "find the friction," or any request to systematically analyze a workflow and generate actionable components. Also use when the user describes a business process and wants to know where AI, automation, or tooling can be inserted. Works for ANY domain — sales pipelines, content creation, infrastructure, client delivery, product development, personal workflows, or anything with sequential steps that produce an outcome. This is a universal module factory — give it any process, get back a complete set of buildable modules.
+description: Create automation modules for any process, workflow, or business function by decomposing it into a value chain and identifying friction at each stage. Use this skill whenever the user wants to brainstorm modules, break down a process into automatable steps, identify bottlenecks in a workflow, design a modular system, or figure out "what should I automate." Triggers on phrases like "create modules for," "what modules do we need," "how do I automate this," "brainstorm ideas for," "modularize this," "break this down," "decompose this process," "find the friction," or any request to systematically analyze a workflow and generate actionable components. Also use when the user describes a business process and wants to know where AI, automation, or tooling can be inserted. Also triggers automatically when a PRD skill completes — the PRD skill calls this skill to decompose each P-item into modules and tasks. Works for ANY domain — sales pipelines, content creation, infrastructure, client delivery, product development, personal workflows, or anything with sequential steps that produce an outcome. This is a universal module factory — give it any process, get back a complete set of buildable modules with a machine-readable task list.
 ---
 
-# Module Creation
+# Module Creation v2
 
 A universal framework for turning any process into a system of automatable modules. The core insight: every process that produces value follows a chain of transformations. Each transformation has friction. Each friction point is a module waiting to be built.
+
+**v2 additions:** Task list generation per module, master task list compilation, JSON task manifest for controller tracking, P-item references, and PRD-linked output mode.
+
+## When to use this skill
+
+- Standalone: user wants to decompose a process into buildable modules
+- **Linked mode (automatic):** called by the PRD skill after PRD completion — decomposes each P-item into modules + tasks
+- Updating: user updates a PRD and specific P-items need re-decomposition
 
 ## The Framework (5 Steps)
 
@@ -81,9 +89,9 @@ Group modules into build phases:
 
 ---
 
-## Output Format
+## Output Format (v2 — includes task list and controller manifest)
 
-When delivering a Value Chain Decomposition, always produce:
+When delivering a Value Chain Decomposition, always produce ALL of the following:
 
 ### 1. The Chain Diagram
 List all stages in order with transformation statements.
@@ -92,21 +100,114 @@ List all stages in order with transformation statements.
 For each module:
 - **Name**: Clear, descriptive (2-4 words)
 - **Stage**: Which stage(s) it serves
-- **Type**: Intelligence / Automation / Prediction (from which friction question it came)
+- **P-item**: Which PRD P-item this module serves (e.g. P2-1) — required in linked mode
+- **Type**: Intelligence / Automation / Prediction
 - **Description**: One paragraph — what it does and why it matters
 - **Input**: What data/events it needs
 - **Output**: What it produces
 - **Trigger**: When it runs (scheduled, event-driven, on-demand)
 - **Compound connections**: What modules feed it, what modules it feeds
 
-### 3. The Dependency Map
+### 3. Task List Per Module
+For every module, generate a concrete task list — atomic work units (30min–4h each).
+
+Format:
+```markdown
+## Module: [Name]
+**P-item:** [e.g. P2-1]
+**Status:** TODO
+
+### Tasks
+- [ ] [Task 1 — specific, implementable]
+- [ ] [Task 2]
+- [ ] [Task 3]
+- [ ] Tests
+```
+
+Task writing rules:
+- Each task is a single, atomic, testable unit of work
+- A developer or AI should be able to complete it in one sitting without ambiguity
+- Tasks should be implementation-level ("Define ReconcileEngine struct with events channel field") not goal-level ("Build reconciler")
+- Always include a Tests task at the end of each module
+- 3–8 tasks per module is the target range
+
+### 4. Master Task List
+Flatten all module task lists into one sorted list with status and P-item references.
+
+```markdown
+# Master Task List — [Project Name]
+Generated: [date]
+
+## TODO
+- [ ] [P2-1.1] [Task description] — Module: [Module Name]
+- [ ] [P2-1.2] [Task description] — Module: [Module Name]
+- [ ] [P2-2.1] [Task description] — Module: [Module Name]
+
+## IN PROGRESS
+(empty at generation — updated by controller on each commit)
+
+## DONE
+(empty at generation — updated by controller on each commit)
+```
+
+### 5. JSON Task Manifest
+Machine-readable version for controller tracking. Always output this block — it's what the controller reads to auto-update PRD status.
+
+```json
+{
+  "project": "[project-id]",
+  "generated": "[ISO date]",
+  "prd_version": "[version]",
+  "modules": [
+    {
+      "id": "[module-id]",
+      "name": "[Module Name]",
+      "p_item": "[P2-1]",
+      "status": "TODO",
+      "tasks": [
+        {
+          "id": "[P2-1.1]",
+          "description": "[Task description]",
+          "status": "TODO",
+          "commit": null
+        }
+      ]
+    }
+  ]
+}
+```
+
+### 6. The Dependency Map
 Which modules feed which. Identify fan-out nodes and feedback loops.
 
-### 4. The Priority Stack
+### 7. The Priority Stack
 Top 5 modules to build first and why.
 
-### 5. The Build Phases
+### 8. The Build Phases
 Grouped into 3 phases with rationale.
+
+---
+
+## Linked Mode (called from PRD skill)
+
+When invoked by the PRD skill after PRD creation or update:
+
+1. Receive the PRD's P-items as input
+2. For each P-item, run Steps 1-5 treating the P-item goal as the process to decompose
+3. Generate module inventory + task list + JSON manifest
+4. Output three files:
+   - `[project]-decomposition.md` — full module breakdown (human-readable)
+   - `[project]-tasks.md` — master task list (human-readable)
+   - `[project]-tasks.json` — task manifest (machine-readable, for controller)
+5. All three are committed to the project's repo alongside the PRD
+
+**PRD update handling (graceful):**
+
+When the PRD changes:
+- **Added P-items:** Run decomposition on new P-items only. Append to decomposition doc.
+- **Changed P-items:** Re-run on changed P-items only. Update those sections. Do not touch task statuses for other P-items.
+- **Removed P-items:** Mark their tasks as `"status": "cancelled"` in JSON manifest. Do not delete. Audit trail preserved.
+- **Done tasks:** Never touched by a PRD update, regardless of what changes. Progress is never erased.
 
 ---
 
@@ -120,17 +221,15 @@ The decomposition works best as a conversation, not a monologue. Here's how to f
 
 **Validating:** Read back the full chain and ask "Is anything missing between [stage N] and [stage N+1]?" People often remember intermediate steps when they see the gap.
 
-**Generating modules:** Don't just list modules — explain the friction that creates each one. "You mentioned that preparing for calls takes 30 minutes — that's because you're doing [research, comparison, prep] manually. A Conversation Prep module would reduce that to 30 seconds by aggregating what the other modules already found." Connect the module to their felt pain.
+**Generating modules:** Don't just list modules — explain the friction that creates each one. Connect the module to their felt pain.
 
-**Iterating:** After the first pass, ask: "Looking at these modules, which ones make you think 'if I had that, everything else would be easier'?" Their answer reveals the true high-leverage modules, which may differ from the algorithmic priority.
+**Iterating:** After the first pass, ask: "Looking at these modules, which ones make you think 'if I had that, everything else would be easier'?" Their answer reveals the true high-leverage modules.
 
 ---
 
 ## Domain Templates
 
-For common domains, use these starting chains as scaffolding. Load the relevant reference file for expanded templates with pre-identified friction points.
-
-See `references/domain-templates.md` for expanded templates covering:
+For common domains, use these starting chains as scaffolding. See `references/domain-templates.md` for expanded templates covering:
 - Sales/Lead Pipeline
 - Content Creation Pipeline
 - Client/Project Delivery
@@ -141,18 +240,18 @@ See `references/domain-templates.md` for expanded templates covering:
 - Customer Support
 - Financial Operations
 
-These are starting points, not prescriptions. Every instance of a domain has unique stages — the templates just prevent you from missing common ones.
-
 ---
 
 ## Anti-Patterns
 
-**Don't generate modules for their own sake.** If a stage has low friction and works well manually, say so. Not everything needs automation. The honest answer is sometimes "this stage is fine, leave it alone."
+**Don't generate modules for their own sake.** If a stage has low friction and works well manually, say so.
 
-**Don't confuse stages with modules.** Stages are parts of the value chain. Modules are solutions to friction within stages. A stage might need zero modules (it's already efficient) or five modules (it's a major bottleneck).
+**Don't confuse stages with modules.** Stages are parts of the value chain. Modules are solutions to friction within stages.
 
-**Don't flatten compound chains.** If you find yourself listing modules without connections between them, you've missed the structure. Every module should either consume or produce something that another module cares about.
+**Don't flatten compound chains.** Every module should either consume or produce something another module cares about.
 
-**Don't skip the user's language.** If they call it "prospecting" don't rename it "discovery" without asking. Their terminology encodes their mental model, and the modules need to map to how they think, not how a textbook categorizes it.
+**Don't skip the user's language.** Their terminology encodes their mental model.
 
-**Don't over-specify too early.** The first pass should be module concepts, not implementation specs. Let the user react to the concepts before going deep on any single module. They'll tell you which ones to flesh out.
+**Don't over-specify too early.** The first pass should be module concepts. Let the user react before going deep.
+
+**Don't generate vague tasks.** "Implement the module" is not a task. "Define the struct, wire it to the scheduler, add the MCP tool, write 3 tests for boundary conditions" is four tasks.
