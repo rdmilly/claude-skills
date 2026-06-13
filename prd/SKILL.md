@@ -197,3 +197,37 @@ Commit format that the controller parses: `[P2-1.3] Description` where `P2-1` is
 - [ ] Module-creation has been invoked and all four documents are ready
 - [ ] Documents committed to repo
 - [ ] Controller project manifest updated
+
+---
+
+## Scan Model (automatic — no action needed)
+
+Three scans happen automatically around every coding task:
+
+**Scan 1 — Before coding:** Forge queried for existing atoms matching the task. Suggestions surface in context. Read-only — no atoms added. Always runs.
+
+**Scan 2 — After build passes:** Forge scans new/changed files. New atoms extracted with confidence = "tested". Only runs when build passes — never scans broken code.
+
+**Scan 3 — After stable deploy (production-critical code only):** 10 minutes after deploy, if the controller confirms the container is healthy and no errors have spiked, atoms from Scan 2 get their confidence elevated to "production-proven." Not needed for routine modules — only for lifecycle management, security, zombie response, and similar critical paths.
+
+The scratchpad is optional — available for complex tasks with design exploration, not mandatory for every file. Simple clear tasks go straight to implementation.
+
+---
+
+## Session End + Auto-Merge (automatic)
+
+At session end (journal write, 20-min inactivity, or context compaction):
+
+1. Event log flushed to journal
+2. Handoff doc synthesized  
+3. All pending commits pushed to session branch
+4. Build checked on session branch
+5. **If build passes → PR auto-merged to main → Telegram notification**
+6. **If build failing → PR stays draft → Telegram alert**
+7. Project state snapshot written
+8. Scan 3 queued for any production-critical code deployed this session
+
+Auto-merge happens every session end when build passes. Not just at PRD completion.
+PRD completion is a milestone marker only — project archived in Helix, historical record created.
+
+Optional: set `require_review: true` in project manifest for PRs that complete a full P-item, if you want a deliberate checkpoint at milestones.
