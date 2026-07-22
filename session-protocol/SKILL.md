@@ -67,7 +67,7 @@ Until then, manual — four writes, not six:
 
    **Non-negotiable — verify the counters.** Both paths return `submitted` / `accepted|created` / `rejected[]`. Read them back against what you sent. A clean `status: recorded` is not proof: scar `_d07e` was five relationships vanishing with no error at all. `relationships_found` wants objects with `source`/`target`/`relation_type` — prose strings are now rejected loudly rather than dropped.
 
-   **Known gap:** atoms buffer and validate but flush holds them as `pending_catalog` — the authored-atom catalog path isn't wired (`helix_scan` extracts via Tree-sitter + Haiku, which is off). Held and reported, never dropped.
+   **Atoms (corrected 2026-07-22):** atoms flush to **The Forge** (`the-forge:9095/api/forge/scan`), the LIVE language-agnostic extractor — python, javascript, typescript, go, rust, bash, dockerfile, docker-compose. `helix/services/scanner.py` is a LEGACY python-only AST path; never route atoms there, and note its "Tree-sitter + Haiku" tool description is wrong in both directions (scar `_e9aa`). A language with no registered patterns now returns `unsupported_language` with the registered list instead of a clean zero-atom scan.
 
    **When Haiku returns:** every record carries `provenance`. Give `haiku_reconciler` a skip-if-authored check before flipping `HELIX_LLM_ENRICH` back to `1`, or you get two versions of one truth with no rule for which wins.
 
@@ -90,5 +90,7 @@ Controller docs live at workdocs `projects/mesh-controller/views/` — read `00-
 ## 5. Non-negotiables inherited from the constitution
 
 R2 volumes never auto-deleted · R3 nothing destructive without express confirmation · R4 every mutation attributable · R7 docs with the change · R8 no secrets in code/manifests/chat. Cite rule IDs when they bind a decision.
+
+**R8 in practice — redact by default, not by expectation (scar `_e3bc`).** Git remotes on vps1 embed GitHub PATs directly in the URL, so `git remote -v` leaks a live credential into a transcript that Helix captures. The failure mode is incidental exposure while inspecting something unrelated: secrets you EXPECT get handled carefully, secrets you don't get printed. Pipe any command whose output may contain config, env, or remote URLs through a redactor — e.g. `git remote get-url origin | sed -E 's#//[^@]*@#//<redacted>@#'` — and print names, never values.
 
 Note on R4 in `/opt/projects/helix`: a Git Sync Daemon auto-commits within seconds as "Git Sync Daemon" with the message `sync: <path>`, so hand-written commit messages there are lost and mutations are attributed to the daemon (scar `_d60a`). Put rationale in Cicatrix and code comments, not the git log.
